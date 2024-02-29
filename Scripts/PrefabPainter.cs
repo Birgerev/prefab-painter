@@ -50,8 +50,7 @@ namespace PrefabPainter
         public float maxYPosition = 400;
 
         // Paint Objects
-        GameObject paintGroup;
-        string paintGroupName = "Paint";
+        Transform paintParent;
         public int listSize = 0;
         public List<PaintObject> paintObjects;
         bool isPainting;
@@ -241,7 +240,7 @@ namespace PrefabPainter
                     layerNames.ToArray());
                 brushSize = EditorGUILayout.FloatField("Brush Size", brushSize);
                 brushDensity = EditorGUILayout.IntField("Brush Density", brushDensity);
-                paintGroupName = EditorGUILayout.TextField("Paint Group Name", paintGroupName);
+                paintParent = (Transform)EditorGUILayout.ObjectField("Paint Group Name", paintParent, typeof(Transform), true);
             }
             EndFold();
 
@@ -500,11 +499,8 @@ namespace PrefabPainter
 
         void DrawPaint()
         {
-            if (paintGroup == null)
-            {
-                if (GameObject.Find(paintGroupName)) paintGroup = GameObject.Find(paintGroupName);
-                else paintGroup = new GameObject(paintGroupName);
-            }
+            if (paintParent == null)
+                paintParent = new GameObject("Paint Objects").transform;
 
             int localDensity = brushDensity;
             Vector3 dir = Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up) * Vector3.right;
@@ -566,9 +562,8 @@ namespace PrefabPainter
 
         void AddObjectToGroup(GameObject obj)
         {
-            Transform parent = GameObject.Find(paintGroupName).transform;
-            if (parent == null) parent = new GameObject(paintGroupName).transform;
-            obj.transform.SetParent(parent);
+            if (paintParent == null) paintParent = new GameObject("Paint Objects").transform;
+            obj.transform.SetParent(paintParent);
         }
 
         public bool LayerContain(LayerMask mask, int layer)
