@@ -12,6 +12,7 @@ namespace PrefabPainter
         public bool randomRotationX = false;
         public bool randomRotationY = true;
         public bool randomRotationZ = false;
+        public bool alignWithNormal = false;
         public string prefabName;
         
         public PaintObject(GameObject prefab)
@@ -35,6 +36,7 @@ namespace PrefabPainter
             EditorGUILayout.Space();
             EditorGUILayout.Space();
             
+            alignWithNormal = GUILayout.Toggle(alignWithNormal, "Align with normal");
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Random Rotation :");

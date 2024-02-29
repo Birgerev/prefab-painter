@@ -376,12 +376,17 @@ namespace PrefabPainter
                 if (GameObject.Find(MouseLocationName) == null)
                     MouseLocation = new GameObject(MouseLocationName).transform;
                 else MouseLocation = GameObject.Find(MouseLocationName).transform;
+                
                 MouseLocation.rotation = mouseHitPoint.transform.rotation;
-                MouseLocation.forward = mouseHitPoint.normal;
+                if(paintObjects.Count > 0 && paintObjects[0].alignWithNormal)
+                    MouseLocation.forward = mouseHitPoint.normal;
+                else
+                    MouseLocation.forward = Vector3.up;
                 Handles.ArrowHandleCap(3, mouseHitPoint.point, MouseLocation.rotation,
                     gizmoNormalLength * brushSize, EventType.Repaint);
                 Handles.CircleHandleCap(2, currentMousePosition, MouseLocation.rotation, brushSize,
                     EventType.Repaint);
+                
                 Handles.color = innerColor;
                 Handles.DrawSolidDisc(currentMousePosition, mouseHitPoint.normal, brushSize);
                 MouseLocation.up = mouseHitPoint.normal;
@@ -390,8 +395,7 @@ namespace PrefabPainter
             Handles.BeginGUI();
             GUIStyle style = new GUIStyle();
             style.normal.textColor = Color.black;
-            GUILayout.BeginArea(
-                new Rect(currentEvent.mousePosition.x + 10, currentEvent.mousePosition.y + 10, 250, 100));
+            GUILayout.BeginArea(new Rect(currentEvent.mousePosition.x + 10, currentEvent.mousePosition.y + 10, 250, 100));
             if (displayDebugInfo)
             {
                 GUILayout.TextField("Size: " + System.Math.Round(brushSize, 2), style);
@@ -517,11 +521,6 @@ namespace PrefabPainter
 
         GameObject SpawnObject(Vector3 pos)
         {
-                if (MouseLocation)
-                {
-                    go.transform.rotation = MouseLocation.rotation;
-                    go.transform.up = MouseLocation.up;
-                }
             PaintObject paintObject = paintObjects[Random.Range(0, paintObjects.Count)];
             GameObject prefabObj = paintObject.prefab;
             if (prefabObj == null) return null;
@@ -529,7 +528,11 @@ namespace PrefabPainter
             GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(prefabObj);
             Undo.RegisterCreatedObjectUndo(obj, "Prefab Paint");
 
-                else go.transform.rotation = Quaternion.identity;
+            if (MouseLocation && paintObject.alignWithNormal)
+            {
+                obj.transform.rotation = MouseLocation.rotation;
+                obj.transform.up = MouseLocation.up;
+            }
 
             else obj.transform.rotation = Quaternion.identity;
 
