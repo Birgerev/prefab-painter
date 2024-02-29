@@ -525,44 +525,43 @@ namespace PrefabPainter
 
         GameObject SpawnObject(Vector3 pos)
         {
-            int rndIndex = Random.Range(0, paintObjects.Count);
-            GameObject prefabObj = paintObjects[rndIndex].GetGameObject();
-            GameObject go = null;
-            if (prefabObj != null)
-            {
-                go = (GameObject)PrefabUtility.InstantiatePrefab(prefabObj);
-                Undo.RegisterCreatedObjectUndo(go, "Prefab Paint");
-
                 if (MouseLocation)
                 {
                     go.transform.rotation = MouseLocation.rotation;
                     go.transform.up = MouseLocation.up;
                 }
+            PaintObject paintObject = paintObjects[Random.Range(0, paintObjects.Count)];
+            GameObject prefabObj = paintObject.prefab;
+            if (prefabObj == null) return null;
+            
+            GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(prefabObj);
+            Undo.RegisterCreatedObjectUndo(obj, "Prefab Paint");
 
                 else go.transform.rotation = Quaternion.identity;
 
-                bool randomRotationX = paintObjects[rndIndex].getRandomRotationX();
-                bool randomRotationY = paintObjects[rndIndex].getRandomRotationY();
-                bool randomRotationZ = paintObjects[rndIndex].getRandomRotationZ();
+            else obj.transform.rotation = Quaternion.identity;
 
-                if (randomRotationX) go.transform.Rotate(Vector3.right, Random.Range(0, 360));
-                if (randomRotationY) go.transform.Rotate(Vector3.up, Random.Range(0, 360));
-                if (randomRotationZ) go.transform.Rotate(Vector3.forward, Random.Range(0, 360));
+            bool randomRotationX = paintObject.randomRotationX;
+            bool randomRotationY = paintObject.randomRotationY;
+            bool randomRotationZ = paintObject.randomRotationZ;
 
-                Vector2 scale = paintObjects[rndIndex].getSize();
-                if (scale != Vector2.one && scale != Vector2.zero)
-                {
-                    float randomScale = Random.Range(scale.x, scale.y);
-                     go.transform.localScale *= randomScale;
-                }
-                   
+            if (randomRotationX) obj.transform.Rotate(Vector3.right, Random.Range(0, 360));
+            if (randomRotationY) obj.transform.Rotate(Vector3.up, Random.Range(0, 360));
+            if (randomRotationZ) obj.transform.Rotate(Vector3.forward, Random.Range(0, 360));
 
-                go.transform.position = pos;
-                DoubleRayCast(go, rndIndex);
-                if (go) AddObjectToGroup(go, rndIndex);
+            Vector2 scale = paintObject.size;
+            if (scale != Vector2.one && scale != Vector2.zero)
+            {
+                float randomScale = Random.Range(scale.x, scale.y);
+                 obj.transform.localScale *= randomScale;
             }
+               
 
-            return go;
+            obj.transform.position = pos;
+            DoubleRayCast(obj);
+            if (obj) AddObjectToGroup(obj);
+
+            return obj;
         }
 
         void AddObjectToGroup(GameObject obj, int index)
@@ -645,7 +644,7 @@ namespace PrefabPainter
             for (int i = 0; i < numberOfPrefabs; i++)
             {
                 var e = Event.current;
-                GameObject go = prefabs[i].GetGameObject();
+                GameObject go = prefabs[i].prefab;
 
                 int columns = Mathf.FloorToInt(windowWidth / (50 + 20) + 1);
                 int rows = Mathf.FloorToInt(numberOfPrefabs / columns);

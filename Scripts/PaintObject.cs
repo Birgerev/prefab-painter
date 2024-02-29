@@ -1,25 +1,22 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using UnityEngine.Serialization;
 
 namespace PrefabPainter
 {
     [System.Serializable]
     public class PaintObject
     {
-        private GameObject go;
-        private Vector2 size = Vector2.one;
-        private bool randomRotationX = false;
-        private bool randomRotationY = false;
-        private bool randomRotationZ = false;
-        private string prefabName;
-
-        private bool settingsToggled;
-
-        [HideInInspector] public Editor gameObjectEditor;
-
-        public PaintObject(GameObject go)
+        public GameObject prefab;
+        public Vector2 size = Vector2.one;
+        public bool randomRotationX = false;
+        public bool randomRotationY = true;
+        public bool randomRotationZ = false;
+        public string prefabName;
+        
+        public PaintObject(GameObject prefab)
         {
-            this.go = go;
+            this.prefab = prefab;
         }
 
         public void displaySettings()
@@ -30,10 +27,17 @@ namespace PrefabPainter
             if (prefabName == "") GUILayout.Label("Prefab Settings", EditorStyles.boldLabel);
             else GUILayout.Label("Prefab Settings - " + prefabName, EditorStyles.boldLabel);
 
-            size.x = EditorGUILayout.FloatField("Min Size", size.x);
-            size.y = EditorGUILayout.FloatField("Max Size", size.y);
-            GUILayout.Label("Random Rotation :");
             EditorGUILayout.BeginHorizontal();
+            size.x = EditorGUILayout.FloatField("Min Size", size.x);
+            size.y = EditorGUILayout.FloatField("", size.y);
+            EditorGUILayout.Space();
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Random Rotation :");
             randomRotationX = GUILayout.Toggle(randomRotationX, "X");
             randomRotationY = GUILayout.Toggle(randomRotationY, "Y");
             randomRotationZ = GUILayout.Toggle(randomRotationZ, "Z");
@@ -43,40 +47,10 @@ namespace PrefabPainter
             EditorGUILayout.EndVertical();
             GUILayout.Space(0);
         }
-
-        public bool getRandomRotationX()
-        {
-            return randomRotationX;
-        }
-
-        public bool getRandomRotationY()
-        {
-            return randomRotationY;
-        }
-
-        public bool getRandomRotationZ()
-        {
-            return randomRotationZ;
-        }
-
-        public Vector2 getSize()
-        {
-            return size;
-        }
-
-        public GameObject GetGameObject()
-        {
-            return go;
-        }
-
+        
         public void setName(string name)
         {
             prefabName = name;
-        }
-
-        public string getName()
-        {
-            return prefabName;
         }
     }
 }
