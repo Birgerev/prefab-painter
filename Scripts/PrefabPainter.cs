@@ -266,13 +266,9 @@ namespace PrefabPainter
         {
             listSize = palette.palette.Count;
             paintObjects = palette.palette;
-            bool missingPrefabs = false;
             for (int i = 0; i < listSize; i++)
-            {
-                if (paintObjects[i].GetGameObject() == null) missingPrefabs = true;
-            }
-
-            if (missingPrefabs) Debug.Log("<color=cyan>[Prefab Painter] </color>One or more prefabs could not be loaded.");
+                if (paintObjects[i].prefab== null) 
+                    Debug.LogWarning("<color=cyan>[Prefab Painter] </color>Prefab could not be loaded.");
         }
 
         void LoadEmptyPalette()
