@@ -564,7 +564,7 @@ namespace PrefabPainter
             return obj;
         }
 
-        void AddObjectToGroup(GameObject obj, int index)
+        void AddObjectToGroup(GameObject obj)
         {
             Transform parent = GameObject.Find(paintGroupName).transform;
             if (parent == null) parent = new GameObject(paintGroupName).transform;
@@ -576,7 +576,7 @@ namespace PrefabPainter
             return mask == (mask | (1 << layer));
         }
 
-        void DoubleRayCast(GameObject obj, int index)
+        void DoubleRayCast(GameObject obj)
         {
             Vector3 position = obj.transform.position + obj.transform.up * maxYPosition;
             obj.transform.position = position;
